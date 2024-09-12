@@ -23,7 +23,16 @@
             <ul>
   <li><a href="#singularityapptainer-runner-for-styx-compiled-wrappers">Singularity/Apptainer Runner for Styx compiled wrappers</a>
   <ul>
+    <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#advanced-configuration">Advanced Configuration</a></li>
+    <li><a href="#error-handling">Error Handling</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#documentation">Documentation</a></li>
+    <li><a href="#support">Support</a></li>
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#comparison-with-styxdockerhttpsgithubcomchildmindresearchstyxdocker">Comparison with <a href="https://github.com/childmindresearch/styxdocker"><code>styxdocker</code></a></a></li>
   </ul></li>
 </ul>
 
@@ -101,17 +110,99 @@ styxsingularity    </h1>
 <a href="https://github.com/childmindresearch/styxsingularity/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
 <a href="https://childmindresearch.github.io/styxsingularity"><img src="https://img.shields.io/badge/api-docs-blue" alt="pages" /></a></p>
 
+<p><code><a href="">styxsingularity</a></code> is a Python package that provides Singularity/Apptainer integration for Styx compiled wrappers. It allows you to run Styx functions within Singularity containers, offering improved isolation and reproducibility for your workflows.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>You can install <code><a href="">styxsingularity</a></code> using pip:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">styxsingularity</span>
+</code></pre>
+</div>
+
 <h2 id="usage">Usage</h2>
 
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="kn">from</span> <span class="nn">styxdefs</span> <span class="kn">import</span> <span class="n">set_global_runner</span>
 <span class="kn">from</span> <span class="nn">styxsingularity</span> <span class="kn">import</span> <span class="n">SingularityRunner</span>
 
-<span class="n">set_global_runner</span><span class="p">(</span><span class="n">SingularityRunner</span><span class="p">())</span>
+<span class="c1"># Initialize the SingularityRunner with your container images</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">SingularityRunner</span><span class="p">(</span>
+    <span class="n">images</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;ubuntu:20.04&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/ubuntu_20.04.sif&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;python:3.9&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/python_3.9.sif&quot;</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 
-<span class="c1"># Now you can use any Styx functions as usual</span>
+<span class="c1"># Set the global runner for Styx</span>
+<span class="n">set_global_runner</span><span class="p">(</span><span class="n">runner</span><span class="p">)</span>
+
+<span class="c1"># Now you can use any Styx functions as usual, and they will run in Singularity containers</span>
 </code></pre>
 </div>
+
+<h2 id="advanced-configuration">Advanced Configuration</h2>
+
+<p>The SingularityRunner class accepts several parameters for advanced configuration:</p>
+
+<ul>
+<li><code>images</code>: A dictionary mapping container image tags to their local paths</li>
+<li><code>singularity_executable</code>: Path to the Singularity executable (default: <code>"singularity"</code>)</li>
+<li><code>data_dir</code>: Directory for temporary data storage</li>
+<li><code>environ</code>: Environment variables to set in the container</li>
+</ul>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">runner</span> <span class="o">=</span> <span class="n">SingularityRunner</span><span class="p">(</span>
+    <span class="n">images</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ubuntu:20.04&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/ubuntu_20.04.sif&quot;</span><span class="p">},</span>
+    <span class="n">singularity_executable</span><span class="o">=</span><span class="s2">&quot;/usr/local/bin/singularity&quot;</span><span class="p">,</span>
+    <span class="n">data_dir</span><span class="o">=</span><span class="s2">&quot;/tmp/styx_data&quot;</span><span class="p">,</span>
+    <span class="n">environ</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">:</span> <span class="s2">&quot;/app/lib&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+
+<h2 id="error-handling">Error Handling</h2>
+
+<p><code><a href="">styxsingularity</a></code> provides a custom error class, <code><a href="#StyxSingularityError">StyxSingularityError</a></code>, which is raised when a Singularity execution fails. This error includes details about the return code, command arguments, and Singularity arguments for easier debugging.</p>
+
+<h2 id="contributing">Contributing</h2>
+
+<p>Contributions to styxdocker are welcome! Please refer to the <a href="https://github.com/childmindresearch/styxsingularity">GitHub repository</a> for information on how to contribute, report issues, or submit pull requests.</p>
+
+<h2 id="license">License</h2>
+
+<p>styxdocker is released under the MIT License. See the LICENSE file for details.</p>
+
+<h2 id="documentation">Documentation</h2>
+
+<p>For detailed API documentation, please visit our <a href="https://childmindresearch.github.io/styxsingularity">API Docs</a>.</p>
+
+<h2 id="support">Support</h2>
+
+<p>If you encounter any issues or have questions, please open an issue on the <a href="https://github.com/childmindresearch/styxsingularity">GitHub repository</a>.</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<ul>
+<li>Python 3.10+</li>
+<li>Singularity or Apptainer installed and running on your system</li>
+</ul>
+
+<h2 id="comparison-with-styxdockerhttpsgithubcomchildmindresearchstyxdocker">Comparison with <a href="https://github.com/childmindresearch/styxdocker"><code>styxdocker</code></a></h2>
+
+<p>While <a href="https://github.com/childmindresearch/styxdocker"><code>styxdocker</code></a> and <a href="https://github.com/childmindresearch/styxsingularity"><code>styxsingularity</code></a> serve similar purposes, they have some key differences:</p>
+
+<ul>
+<li>Container Technology: <code>styxdocker</code> uses Docker, while styxsingularity uses Singularity/Apptainer.</li>
+<li>Platform Support: <code>styxdocker</code> works on Windows, Linux, and macOS, whereas styxsingularity is not supported on Windows.</li>
+<li>User Permissions: <code>styxdocker</code> can run containers as the current user on POSIX systems, which can help with file permission issues.</li>
+</ul>
+
+<p>Choose the package that best fits your infrastructure and requirements.</p>
 </div>
 
                         <input id="mod-styxsingularity-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
